@@ -36,7 +36,113 @@ typedef struct{
     char date[20];
 } Ticket;
 
+void inputString(char *content, int size);
+int checkInvalidInput(char *s);
+int isValidDate(char *date);
+int getValidInt(char *message);
+double getValidDouble(char *message);
+int checkDuplicate(char *id, Trip *tp, int currentIndex);
+int searchID(Trip *tp, int length, char *id);
+int ticketID(Ticket *tk, int ticketCount, char *id);
+void printLine();
+void printLineTrip();
+void addTrips(Trip *tp, int *length);
+void updateTrip(Trip *tp, int length);
+void buyTicket(Ticket *tk, Ticket ticket[], Trip *tp, int tripLength, int *ticketCount);
+void ticketStatus(Ticket *tk, Trip *tp, int ticketCount, int tripLength);
+void displayTrips(Trip *tp, int length);
+void payTicket(Ticket *tk, int ticketCount);
+void manageTicket(Ticket *tk, Trip *tp, int ticketCount, int tripLength);
 
+
+
+
+int main(){
+    int choice;
+    Trip trips[MAX_TRIPS];
+    int length = 0;
+    int flag = 0;
+    Ticket tickets[MAX_TICKETS];
+    int ticketCount = 0;
+    
+    do{
+        printf("\n+-----------------------------------------------+\n");
+        printf("|%13s%s%13s|\n","","Bus Ticket Management","");
+        printf("+-----------------------------------------------+\n");
+        printf("| %-45s |\n","1. Add new trip ");
+        printf("| %-45s |\n","2. Update available trip");
+        printf("| %-45s |\n","3. Buy ticket");
+        printf("| %-45s |\n","4. Check ticket's status");
+        printf("| %-45s |\n","5. Display trips");
+        printf("| %-45s |\n","6. Pay ticket");
+        printf("| %-45s |\n","7. Ticket management");
+        printf("| %-45s |\n","8. Sales & statistic reports");
+        printf("| %-45s |\n","9. Exit");
+        printf("+-----------------------------------------------+\n");
+        
+        choice = getValidInt(">>>> Enter your option: ");
+        
+        switch(choice){
+            case 1:{
+                addTrips(trips, &length);
+                flag = 1;
+                break;
+            }
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:{
+                if(flag == 0){
+                    printf("Please input trips first! Choose first function.\n");
+                }else{
+                    switch(choice){
+                        case 2:{
+                            updateTrip(trips, length);
+                            break;
+                        }
+                        case 3:{
+                            buyTicket(&tickets[ticketCount], tickets, trips, length, &ticketCount);
+                            break;
+                        }
+                        case 4:{
+                            if (ticketCount == 0) {
+                                printf("No tickets have been sold yet!\n");
+                            } else {
+                                ticketStatus(tickets, trips, ticketCount, length);
+                            }
+                            break;
+                        }
+                        case 5:{
+                            displayTrips(trips, length);
+                            break;
+                        }
+                        case 6:{
+                            payTicket(tickets, ticketCount);
+                            break;
+                        }
+                        case 7:{
+                        	manageTicket(tickets,trips,ticketCount,length);
+							break;
+						}
+                    }
+                }
+                break;
+            }
+            case 9: {
+                printf("Goodbye!\n");
+                return 0;
+            }
+            default:{
+                printf("Invalid. Please choose again.\n");
+                break;
+            }
+        }
+        
+    } while(1);
+}
 
 void inputString(char *content, int size) {
     if (fgets(content, size, stdin) != NULL) {
@@ -796,93 +902,4 @@ void manageTicket(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
 			}	
 		}	
 	} 	
-}
-
-
-
-int main(){
-    int choice;
-    Trip trips[MAX_TRIPS];
-    int length = 0;
-    int flag = 0;
-    Ticket tickets[MAX_TICKETS];
-    int ticketCount = 0;
-    
-    do{
-        printf("\n+-----------------------------------------------+\n");
-        printf("|%13s%s%13s|\n","","Bus Ticket Management","");
-        printf("+-----------------------------------------------+\n");
-        printf("| %-45s |\n","1. Add new trip ");
-        printf("| %-45s |\n","2. Update available trip");
-        printf("| %-45s |\n","3. Buy ticket");
-        printf("| %-45s |\n","4. Check ticket's status");
-        printf("| %-45s |\n","5. Display trips");
-        printf("| %-45s |\n","6. Pay ticket");
-        printf("| %-45s |\n","7. Ticket management");
-        printf("| %-45s |\n","8. Sales & statistic reports");
-        printf("| %-45s |\n","9. Exit");
-        printf("+-----------------------------------------------+\n");
-        
-        choice = getValidInt(">>>> Enter your option: ");
-        
-        switch(choice){
-            case 1:{
-                addTrips(trips, &length);
-                flag = 1;
-                break;
-            }
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:{
-                if(flag == 0){
-                    printf("Please input trips first! Choose first function.\n");
-                }else{
-                    switch(choice){
-                        case 2:{
-                            updateTrip(trips, length);
-                            break;
-                        }
-                        case 3:{
-                            buyTicket(&tickets[ticketCount], tickets, trips, length, &ticketCount);
-                            break;
-                        }
-                        case 4:{
-                            if (ticketCount == 0) {
-                                printf("No tickets have been sold yet!\n");
-                            } else {
-                                ticketStatus(tickets, trips, ticketCount, length);
-                            }
-                            break;
-                        }
-                        case 5:{
-                            displayTrips(trips, length);
-                            break;
-                        }
-                        case 6:{
-                            payTicket(tickets, ticketCount);
-                            break;
-                        }
-                        case 7:{
-                        	manageTicket(tickets,trips,ticketCount,length);
-							break;
-						}
-                    }
-                }
-                break;
-            }
-            case 9: {
-                printf("Goodbye!\n");
-                return 0;
-            }
-            default:{
-                printf("Invalid. Please choose again.\n");
-                break;
-            }
-        }
-        
-    } while(1);
 }
