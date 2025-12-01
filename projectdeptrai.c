@@ -56,8 +56,6 @@ void payTicket(Ticket *tk, int ticketCount);
 void manageTicket(Ticket *tk, Trip *tp, int ticketCount, int tripLength);
 void reportRevenue(Ticket *tk,Trip *tp, int ticketCount, int tripLength);
 
-
-
 int main(){
     int choice;
     Trip trips[MAX_TRIPS];
@@ -164,7 +162,6 @@ int checkInvalidInput(char *s){
     }
     return 0;
 }
-
 
 int isValidDate(char *date) {
     if (strlen(date) != 10) return 0;
@@ -304,7 +301,7 @@ void printLine(){
 }
 
 void print(){
-	printf("+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n");
+	printf("+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n");
 }
 
 void printLineTrip(){
@@ -737,7 +734,7 @@ void displayTrips(Trip *tp, int length) {
 				}
             }
             if (isNum) {
-                int val = atoi(buffer);
+                int val = atoi(buffer); // doi ki tu thanh so
                 if (val > 0 && val <= systemTotalPages) {
                     pageLimit = val; 
                     valid = 1;
@@ -939,23 +936,18 @@ void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
 			printLine();
 			printf("Total revenue: %.0lf VND\n",totalRevenue);
 			printf("Total paid tickets: %d\n",count);
-		
-		
-		break;
-		
-
+			break;
 		case 2:{
 			double grandTotalRevenue = 0; 
 			char depInfo[50], desInfo[50];
 			
-			printLine();
-		
-			printf("|%55s%s%54s|\n","","List Of Trips","");
-			printLineTrip();
+			print();
+			printf("|%80s%s%80s|\n","","List Of Trips","");
+			print();
 	
-			printf("| %-10s | %-35s | %-35s | %-7s | %-7s | %-7s | %-7s | %-12s |\n", 
+			printf("| %-10s | %-50s | %-50s | %-7s | %-7s | %-7s | %-7s | %-12s |\n", 
                     "Trip ID", "Departure", "Destination", "Total", "Paid", "Cancel", "Valid", "Revenue");
-            printLine();
+            print();
             int i,j;
             	for(i = 0 ; i < tripLength; i ++){ //Vong lap chay voi dieu kien trong mang Trip
             		double currentTripRevenue = 0;
@@ -982,15 +974,15 @@ void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
 				sprintf(desInfo,"%s-%s",tp[i].destination.name,tp[i].destination.address);
 				
 				if(totalBooked > 0){
-            			printf("| %-10s | %-35s | %-35s | %-7d | %-7d | %-7d | %-7d | %-12.0lf |\n",
+            			printf("| %-10s | %-50s | %-50s | %-7d | %-7d | %-7d | %-7d | %-12.0lf |\n",
                         tp[i].tripID, depInfo, desInfo, 
                         totalBooked, paidCount, cancelledCount, validCount, 
                         currentTripRevenue);
-					printLineTrip();
+					print();
 					grandTotalRevenue += currentTripRevenue;
 				}	
 			}
-			printf(">>> Tong Doanh Thu Cac Chuyen Di: %.0lf VND\n",grandTotalRevenue);
+			printf(">>> Total revenue: %.0lf VND\n",grandTotalRevenue);
 			break;
 		}
 		case 3:{
@@ -1038,7 +1030,6 @@ void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
                 	printLine();
             	}
        		}
-        
         	printf(">>> TICKETS HAVE BEEN PAID : %d\n", count);	
         	printf(">>> Revenue: %.0lf VND\n", rangeRevenue);
         	break;
@@ -1046,9 +1037,3 @@ void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
         }
 	}
 }
-        
-		
-	
-	
-
-
