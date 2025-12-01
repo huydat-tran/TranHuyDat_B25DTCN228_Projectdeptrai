@@ -36,6 +36,7 @@ typedef struct{
     char date[20];
 } Ticket;
 
+long dateToValue(char *date);
 void inputString(char *content, int size);
 int checkInvalidInput(char *s);
 int isValidDate(char *date);
@@ -53,7 +54,7 @@ void ticketStatus(Ticket *tk, Trip *tp, int ticketCount, int tripLength);
 void displayTrips(Trip *tp, int length);
 void payTicket(Ticket *tk, int ticketCount);
 void manageTicket(Ticket *tk, Trip *tp, int ticketCount, int tripLength);
-
+void reportRevenue(Ticket *tk,Trip *tp, int ticketCount, int tripLength);
 
 
 
@@ -94,51 +95,51 @@ int main(){
             case 5:
             case 6:
             case 7:
-            case 8:{
-                if(flag == 0){
-                    printf("Please input trips first! Choose first function.\n");
-                }else{
+            case 8:
+                if(flag == 0) printf("Please input trips first! Choose first function.\n");
+                else{
                     switch(choice){
-                        case 2:{
+                        case 2:
                             updateTrip(trips, length);
                             break;
-                        }
-                        case 3:{
+                        
+                        case 3:
                             buyTicket(&tickets[ticketCount], tickets, trips, length, &ticketCount);
                             break;
-                        }
-                        case 4:{
-                            if (ticketCount == 0) {
-                                printf("No tickets have been sold yet!\n");
-                            } else {
-                                ticketStatus(tickets, trips, ticketCount, length);
-                            }
+                        
+                        case 4:
+                            if (ticketCount == 0) printf("No tickets have been sold yet!\n");
+                            else ticketStatus(tickets, trips, ticketCount, length);
                             break;
-                        }
-                        case 5:{
+                        
+                        case 5:
                             displayTrips(trips, length);
                             break;
-                        }
-                        case 6:{
+                        
+                        case 6:
                             payTicket(tickets, ticketCount);
                             break;
-                        }
-                        case 7:{
+                        
+                        case 7:
                         	manageTicket(tickets,trips,ticketCount,length);
 							break;
-						}
+						
+						case 8:
+							reportRevenue(tickets, trips, ticketCount, length);
+							break;
+						
                     }
                 }
                 break;
-            }
-            case 9: {
+            
+            case 9: 
                 printf("Goodbye!\n");
                 return 0;
-            }
-            default:{
+            
+            default:
                 printf("Invalid. Please choose again.\n");
                 break;
-            }
+            
         }
         
     } while(1);
@@ -150,7 +151,7 @@ void inputString(char *content, int size) {
         
         int len = strlen(content);
         
-        while (len > 0 && content[len - 1] == ' ') {
+        while (len > 0 && content[len - 1] == ' ') { // Neu len > 0 va ki tu cuoi la dau cach
             content[len - 1] = '\0'; 
             len--;
         }
@@ -158,7 +159,7 @@ void inputString(char *content, int size) {
 }
 
 int checkInvalidInput(char *s){
-    if(strlen(s) == 0 || s[0] == ' '){
+    if(strlen(s) == 0 || s[0] == ' '){ // Neu ko nhap gi va co dau cach o dau thi sai
         return 1;
     }
     return 0;
@@ -181,8 +182,8 @@ int isValidDate(char *date) {
     }
 
     int day, month, year;
-    sscanf(date, "%d/%d/%d", &day, &month, &year);
-
+    sscanf(date, "%d/%d/%d", &day, &month, &year);// trich xuat gia tri so vao day,month,year
+//Kiem tra tinh kha thi
     if (day < 1 || day > 31) return 0;
     if (month < 1 || month > 12) return 0;
     if (year < 1900) return 0;
@@ -198,9 +199,7 @@ int getValidInt(char *message){
     
     while(1){
         printf("%s", message);
-        if(fgets(buffer, sizeof(buffer), stdin) == NULL){
-            return 0;
-        }
+       	inputString(buffer,sizeof(buffer));
         if(buffer[0] == '\n'){
             printf("Invalid. Please enter a number\n");
             continue;
@@ -232,11 +231,9 @@ double getValidDouble(char *message) {
 
     while (1) {
         printf("%s", message);
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-            return 0.0;
-        }
-        
-        if (buffer[0] == '\n') {
+        inputString(buffer,sizeof(buffer));
+            
+        if (buffer[0] == '\n') { //Neu co dau cach o ki tu dau thi sai
             printf("Must enter a number. Try again\n");
             continue;
         }
@@ -246,7 +243,7 @@ double getValidDouble(char *message) {
         valid = 1;
         dotCount = 0;
         for(i = 0; i < strlen(buffer); i++){
-            if(buffer[i] == '.'){
+            if(buffer[i] == '.'){ //Dem so dau cham
                 dotCount++;
             }
             else if(buffer[i] < '0' || buffer[i] > '9'){ 
@@ -255,20 +252,20 @@ double getValidDouble(char *message) {
             }
         }
         
-        if(dotCount > 1) valid = 0; 
+        if(dotCount > 1) valid = 0; // Nhieu hon 1 thi sai
 
         if (valid == 0) {
             printf("Invalid input. Please try again\n");
         } else {
             sscanf(buffer, "%lf", &value);
-            return value;
+            return value; // Neu dung thi se thoat ra khoi vong lap
         }
     }
 }
 
 int checkDuplicate(char *id, Trip *tp, int currentIndex){
 	int i;
-    for(i = 0 ; i < currentIndex ; i++){
+    for(i = 0 ; i < currentIndex ; i++){ 
         if(strcmp(id, tp[i].tripID) == 0){
             return 1;
         }
@@ -286,22 +283,32 @@ int searchID(Trip *tp, int length, char *id){
     return -1;
 }
 
-int ticketID(Ticket *tk, int ticketCount, char *id){
+int ticketID(Ticket *tk, int ticketCount, char *id){ // Ham kiem tra ID 
 	int i;
     for( i = 0; i < ticketCount; i ++){
-        if(strcmp(id, tk[i].ticketID) == 0){
+        if(strcmp(id, tk[i].ticketID) == 0){ // Neu id nguoi dung nhap bang ticketid trong mang thi tra ve gia tri i
             return i;
         }
     }
-    return -1;
+    return -1; // Neu sai
+}
+
+long dateToValue(char *date) {
+    int d, m, y;
+    sscanf(date, "%d/%d/%d", &d, &m, &y);
+    return (long)y * 10000 + m * 100 + d;
 }
 
 void printLine(){
     printf("+------------+----------------------+--------------+-------------------------------------+--------------+-------+--------------+----------+\n");
 }
 
+void print(){
+	printf("+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n");
+}
+
 void printLineTrip(){
-    printf("+------------+-------------------------------------+-------------------------------------+--------------+-------+--------+\n");
+    printf("+------------------------------------------------------------------------------------------------------------------------+\n");//121
 }
 
 void addTrips(Trip *tp, int *length){
@@ -380,10 +387,8 @@ void addTrips(Trip *tp, int *length){
             valid = 1;
             printf("Enter time (dd/mm/yyyy): ");
             inputString(tp[index].date, sizeof(tp[index].date));
-             if(checkInvalidInput(tp[index].date)== 1){
-                printf("Invalid!! Cannot be empty.\n");
-                valid = 0;
-            }else if (isValidDate(tp[index].date) == 0) {
+            
+            if (isValidDate(tp[index].date) == 0) {
                 printf("Invalid format! Use dd/mm/yyyy\n");
                 valid = 0;
             }
@@ -514,8 +519,11 @@ void updateTrip(Trip *tp, int length){
 				}while(valid == 0);
 				printf(">> Total seats updated!");
 				break;
+			case 5:
+				return;
+				
 			}	
-		}while(1);
+		}while(subChoice != 5);;
 	}
 }
 
@@ -548,7 +556,7 @@ void buyTicket(Ticket *tk, Ticket ticket[], Trip *tp, int tripLength, int *ticke
 
     do{
         valid = 1;
-        printf("\nEnter passenger name: ");
+        printf("Enter passenger name: ");
         inputString(tempName, sizeof(tempName));
         if(checkInvalidInput(tempName)==1){
             printf("Invalid!! Cannot be empty or space in first letter!\n"); valid = 0;
@@ -557,13 +565,13 @@ void buyTicket(Ticket *tk, Ticket ticket[], Trip *tp, int tripLength, int *ticke
     
     do{
         valid = 1;
-        printf("\nEnter passenger's phone number: ");
+        printf("Enter passenger's phone number: ");
         inputString(tempPhone, sizeof(tempPhone)); 
         if(checkInvalidInput(tempPhone) == 1){
             printf("Invalid!! Cannot be emty or space in first letter!\n"); valid = 0;
         }
         if(strlen(tempPhone) != 10){
-			printf("Invalid phone number!!"); 
+			printf("Invalid phone number!!\n"); 
 			valid = 0;
 		}
         for(i = 0 ; i < strlen(tempPhone); i ++){
@@ -874,10 +882,9 @@ void manageTicket(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
 				case 1:{
 					if(tk[index].paymentStatus == 2){
 						printf(">>> Error: Ticket is already locked");
-					}else if(tk[index].paymentStatus = -1) printf(">>> Error: Ticket is already cancelled");
-					else{
-						tk[index].paymentStatus = 2;
-					}
+					}else if(tk[index].paymentStatus == -1) printf(">>> Error: Ticket is already cancelled");
+					else tk[index].paymentStatus = 2;
+					printf(">> TICKET LOCKED");
 					break;
 				}
 				case 2:{
@@ -903,3 +910,145 @@ void manageTicket(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
 		}	
 	} 	
 }
+
+void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
+	if(ticketCount == 0) {printf(">>> Invalid. No ticket"); return;}
+	
+	int choice;
+	printf("\n=============== REPORT AND REVENUE ===============\n");
+	printf("| %-48s |\n","1. Total Revenue");
+	printf("| %-48s |\n","2. Stats by trip");
+	printf("| %-48s |\n","3. Date range");
+	printf("==================================================\n");
+	choice = getValidInt("\n>> Enter your option: ");
+	
+	switch(choice){
+		case 1:{
+			
+		
+			double totalRevenue = 0;
+			int count = 0;
+			int i;
+			
+			for( i = 0; i < ticketCount ; i ++){ // Vong lap kiem tra
+				if(tk[i].paymentStatus == 1){ // Kiem tra dieu kien paymentstatus
+					totalRevenue += tk[i].price;
+					count ++;
+				}
+			}
+			printLine();
+			printf("Total revenue: %.0lf VND\n",totalRevenue);
+			printf("Total paid tickets: %d\n",count);
+		
+		
+		break;
+		
+
+		case 2:{
+			double grandTotalRevenue = 0; 
+			char depInfo[50], desInfo[50];
+			
+			printLine();
+		
+			printf("|%55s%s%54s|\n","","List Of Trips","");
+			printLineTrip();
+	
+			printf("| %-10s | %-35s | %-35s | %-7s | %-7s | %-7s | %-7s | %-12s |\n", 
+                    "Trip ID", "Departure", "Destination", "Total", "Paid", "Cancel", "Valid", "Revenue");
+            printLine();
+            int i,j;
+            	for(i = 0 ; i < tripLength; i ++){ //Vong lap chay voi dieu kien trong mang Trip
+            		double currentTripRevenue = 0;
+                	int paidCount = 0;
+                	int cancelledCount = 0;
+                	int validCount = 0; 
+                	int totalBooked = 0;
+				// tiep tuc chay vong lap kiem tra ticket( kiem tra het ticket ghi lai so lieu roi chay tiep sang chuyen tiep theo)
+				for(j = 0 ; j < ticketCount; j ++){
+					if(strcmp(tk[j].tripID,tp[i].tripID)== 0){
+                        totalBooked++; 
+                        if(tk[j].paymentStatus == 1){
+                            paidCount++;
+                            currentTripRevenue += tk[j].price; 
+                            validCount++;
+                        } else if (tk[j].paymentStatus == -1){
+                            cancelledCount++;
+                        } else { // status 0 (UNPAID) hoac 2 (LOCKED)
+                            validCount++;
+                        }
+					}
+				}
+				sprintf(depInfo,"%s-%s",tp[i].departure.name,tp[i].departure.address); // ghi du lieu cau truc vao 1 chuoi ki tu
+				sprintf(desInfo,"%s-%s",tp[i].destination.name,tp[i].destination.address);
+				
+				if(totalBooked > 0){
+            			printf("| %-10s | %-35s | %-35s | %-7d | %-7d | %-7d | %-7d | %-12.0lf |\n",
+                        tp[i].tripID, depInfo, desInfo, 
+                        totalBooked, paidCount, cancelledCount, validCount, 
+                        currentTripRevenue);
+					printLineTrip();
+					grandTotalRevenue += currentTripRevenue;
+				}	
+			}
+			printf(">>> Tong Doanh Thu Cac Chuyen Di: %.0lf VND\n",grandTotalRevenue);
+			break;
+		}
+		case 3:{
+        	char fromDate[20],toDate[20];
+        	int valid = 0;
+        	
+        	do{
+        		valid = 1;
+            	printf("\n>> Enter start date (dd/mm/yyyy): ");
+            	inputString(fromDate, sizeof(fromDate));
+            	
+            	if(isValidDate(fromDate) == 0){
+					printf("Invalid format! Use dd/mm/yyyy");
+					valid = 0;
+					continue;
+				}
+            	printf("\n>> Enter end date (dd/mm/yyyy): ");
+            	inputString(toDate, sizeof(toDate));
+            	
+            	if(isValidDate(toDate) == 0){
+					printf("Invalid format! Use dd/mm/yyyy");
+					valid = 0;
+					continue;
+				}
+				
+				if (dateToValue(fromDate) > dateToValue(toDate)){
+               	 	printf(">> Invalid start date must lower than end date\n");
+                	valid = 0;
+            	}
+			}while(valid == 0);
+        	
+        	printf("\n--- Results from %s to %s ---\n", fromDate, toDate);
+        	double rangeRevenue = 0;
+        	int count = 0;
+        	long startVal = dateToValue(fromDate);
+        	long endVal = dateToValue(toDate);
+        	
+        	int i;
+        	for( i = 0 ; i < ticketCount; i ++){
+        		long currentVal = dateToValue(tk[i].date);
+        		
+        		if(tk[i].paymentStatus ==1 && currentVal >= startVal && currentVal <= endVal){
+                	rangeRevenue += tk[i].price;
+                	count++;
+                	printLine();
+            	}
+       		}
+        
+        	printf(">>> TICKETS HAVE BEEN PAID : %d\n", count);	
+        	printf(">>> Revenue: %.0lf VND\n", rangeRevenue);
+        	break;
+        }
+        }
+	}
+}
+        
+		
+	
+	
+
+
