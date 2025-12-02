@@ -147,7 +147,7 @@ void inputString(char *content, int size) {
     if (fgets(content, size, stdin) != NULL) {
         content[strcspn(content, "\n")] = 0;
         
-        int len = strlen(content);
+        int len = strlen(content); //Gan len de toi uu hoa hieu nang
         
         while (len > 0 && content[len - 1] == ' ') { // Neu len > 0 va ki tu cuoi la dau cach
             content[len - 1] = '\0'; 
@@ -180,7 +180,7 @@ int isValidDate(char *date) {
 
     int day, month, year;
     sscanf(date, "%d/%d/%d", &day, &month, &year);// trich xuat gia tri so vao day,month,year
-//Kiem tra tinh kha thi
+	//Kiem tra tinh kha thi
     if (day < 1 || day > 31) return 0;
     if (month < 1 || month > 12) return 0;
     if (year < 1900) return 0;
@@ -595,7 +595,7 @@ void buyTicket(Ticket *tk, Ticket ticket[], Trip *tp, int tripLength, int *ticke
     
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
-    sprintf(dateNow, "%02d/%02d/%d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900); 
+    sprintf(dateNow, "%02d/%02d/%d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900); //ghi du lieu ngay vao cau ttruc dateNow
     
     do{
         pricePerTicket = getValidDouble("Enter price per ticket: "); 
@@ -714,14 +714,14 @@ void displayTrips(Trip *tp, int length) {
         }       
     } while (valid == 0);
     
-    int systemTotalPages = (length + pageSize - 1) / pageSize;
+    int systemTotalPages = (length + pageSize - 1) / pageSize; //Cong thuc lam tron hop li de tranh lam tron qua
     
     do {
         valid = 0;
         printf(">> Enter number of pages to view (1 - %d): ", systemTotalPages);
         inputString(buffer, sizeof(buffer));
         
-        if (strlen(buffer) == 0) {
+        if (strlen(buffer) == 0) { // Khong nhap gi (ke ca co nhap space thi cungkhong tinh)
             printf(">> Selected default (1 page)\n");
             pageLimit = 1;
             valid = 1;
@@ -733,7 +733,7 @@ void displayTrips(Trip *tp, int length) {
 					break; 
 				}
             }
-            if (isNum) {
+            if (isNum) { // Neu nhu ko co ki tu nao 
                 int val = atoi(buffer); // doi ki tu thanh so
                 if (val > 0 && val <= systemTotalPages) {
                     pageLimit = val; 
@@ -741,7 +741,7 @@ void displayTrips(Trip *tp, int length) {
                 } else {
                     printf(">> Invalid. Must be between 1 and %d\n", systemTotalPages);
                 }
-            } else printf(">> Invalid. No contains letters or spaces.\n");
+            } else printf(">> Invalid. No contains letters.\n");
         }
     } while (valid == 0);
 
@@ -957,7 +957,7 @@ void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
                 	int totalBooked = 0;
 				// tiep tuc chay vong lap kiem tra ticket( kiem tra het ticket ghi lai so lieu roi chay tiep sang chuyen tiep theo)
 				for(j = 0 ; j < ticketCount; j ++){
-					if(strcmp(tk[j].tripID,tp[i].tripID)== 0){
+					if(strcmp(tk[j].tripID,tp[i].tripID)== 0){ //Kiem tra neu tripID(trong ticket) bang voi tripID
                         totalBooked++; 
                         if(tk[j].paymentStatus == 1){
                             paidCount++;
@@ -997,7 +997,7 @@ void reportRevenue(Ticket *tk, Trip *tp, int ticketCount, int tripLength){
             	if(isValidDate(fromDate) == 0){
 					printf("Invalid format! Use dd/mm/yyyy");
 					valid = 0;
-					continue;
+					continue; //Neu sai thi continue luon ko nhap dc end date
 				}
             	printf("\n>> Enter end date (dd/mm/yyyy): ");
             	inputString(toDate, sizeof(toDate));
